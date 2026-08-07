@@ -13,13 +13,14 @@ unset($_SESSION['login_error']);
     <title>Entrar — LicitAI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" rel="stylesheet">
     <link href="/assets/app.css" rel="stylesheet">
 </head>
 <body>
 <div class="login-wrapper">
     <div class="card login-card">
         <div class="card-body">
-            <div class="login-logo"><i class="bi bi-gavel"></i></div>
+            <div class="login-logo"><i class="ti ti-gavel"></i></div>
             <h1 class="h4 text-center fw-bold mb-1">LicitAI</h1>
             <p class="text-center text-muted small mb-4">Análise de propostas — Lei 14.133/2021</p>
 
@@ -40,7 +41,7 @@ unset($_SESSION['login_error']);
                     <input type="password" class="form-control" id="senha" name="senha" required>
                 </div>
                 <button type="submit" class="btn btn-info w-100">
-                    <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
+                    <i class="ti ti-login me-1"></i>Entrar
                 </button>
             </form>
 

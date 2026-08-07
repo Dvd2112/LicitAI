@@ -83,11 +83,44 @@ switch ($path) {
         header('Location: /login');
         exit;
 
+    case '/edital/novo':
+        require __DIR__ . '/../front/views/edital_novo.php';
+        break;
+
     case '/edital':
         if ($method === 'POST') {
             $numero = trim((string) ($_POST['numero'] ?? ''));
             $titulo = trim((string) ($_POST['titulo'] ?? ''));
-            $orgao = trim((string) ($_POST['orgao'] ?? ''));
+            $entidade = trim((string) ($_POST['entidade'] ?? ''));
+            $orgao = $entidade !== '' ? $entidade : trim((string) ($_POST['orgao'] ?? ''));
+            $ano = trim((string) ($_POST['ano'] ?? ''));
+            $tipo = trim((string) ($_POST['tipo'] ?? ''));
+            $processo = trim((string) ($_POST['processo'] ?? ''));
+            $site = trim((string) ($_POST['site'] ?? ''));
+            $licenca = !empty($_POST['licenca']);
+            $entrega = trim((string) ($_POST['entrega'] ?? ''));
+            $total = (float) ($_POST['total'] ?? 0);
+
+            $itens = [];
+            foreach ((array) ($_POST['item_codigo'] ?? []) as $i => $codigo) {
+                if (trim((string) $codigo) === '') {
+                    continue;
+                }
+                $itens[] = [
+                    'codigo' => $codigo,
+                    'descricao' => trim((string) ($_POST['item_descricao'][$i] ?? '')),
+                    'unidade' => trim((string) ($_POST['item_unidade'][$i] ?? '')),
+                    'quantidade' => (float) ($_POST['item_quantidade'][$i] ?? 0),
+                    'unitario' => (float) ($_POST['item_unitario'][$i] ?? 0),
+                ];
+            }
+
+            $arquivos = [];
+            foreach (($_FILES['documentos']['name'] ?? []) as $name) {
+                if (is_string($name) && $name !== '') {
+                    $arquivos[] = basename($name);
+                }
+            }
 
             if ($numero !== '' && $titulo !== '' && $orgao !== '') {
                 $_SESSION['editais'][] = [
@@ -95,6 +128,15 @@ switch ($path) {
                     'numero' => $numero,
                     'titulo' => $titulo,
                     'orgao' => $orgao,
+                    'ano' => $ano,
+                    'tipo' => $tipo,
+                    'processo' => $processo,
+                    'site' => $site,
+                    'licenca' => $licenca,
+                    'entrega' => $entrega,
+                    'itens' => $itens,
+                    'total' => $total,
+                    'documentos' => $arquivos,
                     'status' => 'aberto',
                     'data' => date('d/m/Y'),
                 ];

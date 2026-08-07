@@ -5,9 +5,9 @@ declare(strict_types=1);
 function layout_header(string $title, string $active = ''): void
 {
     $navItems = [
-        'edital' => ['/edital', 'Edital', 'bi-file-earmark-text'],
-        'licitantes' => ['/licitantes', 'Retornos dos Licitantes', 'bi-people'],
-        'contratos' => ['/contratos', 'Contratos', 'bi-briefcase'],
+        'edital' => ['/edital', 'Edital', 'ti-file-text'],
+        'licitantes' => ['/licitantes', 'Retornos dos Licitantes', 'ti-users'],
+        'contratos' => ['/contratos', 'Contratos', 'ti-briefcase'],
     ];
     ?>
 <!DOCTYPE html>
@@ -18,13 +18,14 @@ function layout_header(string $title, string $active = ''): void
     <title><?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?> — LicitAI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" rel="stylesheet">
     <link href="/assets/app.css" rel="stylesheet">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2" href="/edital">
-            <span class="icon-btn bg-primary bg-opacity-10 text-primary"><i class="bi bi-gavel"></i></span>
+            <span class="icon-btn bg-primary bg-opacity-10 text-primary"><i class="ti ti-gavel"></i></span>
             LicitAI
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
@@ -41,7 +42,7 @@ function layout_header(string $title, string $active = ''): void
                 <?php endforeach; ?>
             </ul>
             <a class="btn btn-outline-danger btn-sm" href="/logout">
-                <i class="bi bi-box-arrow-right me-1"></i>Sair
+                <i class="ti ti-logout me-1"></i>Sair
             </a>
         </div>
     </div>
