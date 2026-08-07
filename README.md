@@ -47,8 +47,8 @@ Assistente analítico que:
 cp .env.example .env       # preencha DB + DEEPSEEK_API_KEY + GEMINI_API_KEY
 composer install
 php scripts/migrate.php
-php -S localhost:8000 -t public   # terminal 1
-php scripts/worker.php            # terminal 2
+php -S localhost:8000 public/index.php   # terminal 1 (router: todas as rotas)
+php scripts/worker.php                   # terminal 2
 ```
 
 Acesse http://localhost:8000 — detalhes no [ONBOARDING.md](ONBOARDING.md).

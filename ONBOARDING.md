@@ -133,8 +133,8 @@ Chaves necessárias:
 ### 3.3 Rodar o sistema (2 terminais)
 
 ```bash
-# Terminal 1 — servidor de desenvolvimento
-php -S localhost:8000 -t public
+# Terminal 1 — servidor de desenvolvimento (index.php como router)
+php -S localhost:8000 public/index.php
 
 # Terminal 2 — worker (processa uploads, classificação e alertas)
 php scripts/worker.php
@@ -295,7 +295,7 @@ Exemplo de uso: `me ajuda a criar o migration 003 para a tabela de aditivos, seg
 - [ ] `composer install` sem erros
 - [ ] `.env` preenchido com banco + chaves DeepSeek e Gemini
 - [ ] `php scripts/migrate.php` aplica todas as migrations sem erro
-- [ ] `php -S localhost:8000 -t public` abre a home (Bootstrap carregado)
+- [ ] `php -S localhost:8000 public/index.php` abre a home (Bootstrap carregado)
 - [ ] Worker rodando e processando um upload de teste (PDF de 1 página)
 - [ ] Upload de TR + proposta → requisitos extraídos → classificação gerada
 - [ ] Validação humana gravada no `audit_log` com hash
