@@ -1,8 +1,8 @@
 :root {
-    --color-primary: #14406b;
-    --color-primary-rgb: 20, 64, 107;
-    --color-primary-hover: #0d2f4f;
-    --color-primary-light: #e6edf5;
+    --color-primary: #0348f3;
+    --color-primary-rgb: 3, 72, 243;
+    --color-primary-hover: #033ac4;
+    --color-primary-light: #e6edfe;
 
     --color-bg: #f4f5f7;
     --color-surface: #ffffff;
