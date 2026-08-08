@@ -125,7 +125,7 @@ $preselect = (int) ($_GET['enviar'] ?? 0);
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
-                        <div class="<?= $isAdmin ? 'col-md-6' : 'col-12' ?>">
+                        <div class="col-12">
                             <label class="form-label" for="p_licitacao">Licitação *</label>
                             <select class="form-select" id="p_licitacao" name="licitation_id" required>
                                 <option value="">Selecione a licitação...</option>
@@ -136,6 +136,7 @@ $preselect = (int) ($_GET['enviar'] ?? 0);
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <?php /* Empresa (oculto do popup): 
                         <?php if ($isAdmin): ?>
                             <div class="col-md-6">
                                 <label class="form-label" for="p_empresa">Empresa *</label>
@@ -148,6 +149,10 @@ $preselect = (int) ($_GET['enviar'] ?? 0);
                                     <?php endforeach; ?>
                                 </select>
                             </div>
+                        <?php endif; ?>
+                        */ ?>
+                        <?php if ($isAdmin && $empresasDisponiveis): ?>
+                            <input type="hidden" name="company_id" value="<?= (int) $empresasDisponiveis[0]['id'] ?>">
                         <?php endif; ?>
                         <div class="col-12">
                             <label class="form-label" for="p_documentos">Documentos da proposta (PDF) *</label>
