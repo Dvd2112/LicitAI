@@ -105,27 +105,35 @@ if ($isAdmin) {
     <div class="stat-grid mb-4">
         <div class="stat-tile">
             <div class="stat-icon"><i class="ti ti-file-text"></i></div>
-            <div class="stat-label">Licitações em andamento</div>
-            <div class="stat-value"><?= $licitacoesAbertas ?></div>
-            <a href="/edital" class="stat-link">Ver todas <i class="ti ti-chevron-right"></i></a>
+            <div class="stat-body">
+                <div class="stat-label">Licitações em andamento</div>
+                <div class="stat-value"><?= $licitacoesAbertas ?></div>
+                <a href="/edital" class="stat-link">Ver todas <i class="ti ti-chevron-right"></i></a>
+            </div>
         </div>
         <div class="stat-tile">
             <div class="stat-icon stat-icon-success"><i class="ti ti-file-check"></i></div>
-            <div class="stat-label">Propostas recebidas</div>
-            <div class="stat-value"><?= $totalPropostas ?></div>
-            <a href="/licitantes" class="stat-link">Ver todas <i class="ti ti-chevron-right"></i></a>
+            <div class="stat-body">
+                <div class="stat-label">Propostas recebidas</div>
+                <div class="stat-value"><?= $totalPropostas ?></div>
+                <a href="/licitantes" class="stat-link">Ver todas <i class="ti ti-chevron-right"></i></a>
+            </div>
         </div>
         <div class="stat-tile">
             <div class="stat-icon stat-icon-warning"><i class="ti ti-clock"></i></div>
-            <div class="stat-label">Análises pendentes</div>
-            <div class="stat-value"><?= $pendentes ?></div>
-            <a href="/licitantes" class="stat-link">Ver todas <i class="ti ti-chevron-right"></i></a>
+            <div class="stat-body">
+                <div class="stat-label">Análises pendentes</div>
+                <div class="stat-value"><?= $pendentes ?></div>
+                <a href="/licitantes" class="stat-link">Ver todas <i class="ti ti-chevron-right"></i></a>
+            </div>
         </div>
         <div class="stat-tile">
             <div class="stat-icon stat-icon-purple"><i class="ti ti-briefcase"></i></div>
-            <div class="stat-label">Contratos ativos</div>
-            <div class="stat-value"><?= $contratosAtivos ?></div>
-            <a href="/contratos" class="stat-link">Ver todos <i class="ti ti-chevron-right"></i></a>
+            <div class="stat-body">
+                <div class="stat-label">Contratos ativos</div>
+                <div class="stat-value"><?= $contratosAtivos ?></div>
+                <a href="/contratos" class="stat-link">Ver todos <i class="ti ti-chevron-right"></i></a>
+            </div>
         </div>
     </div>
 
@@ -239,23 +247,31 @@ if ($isAdmin) {
     <div class="stat-grid mb-4">
         <div class="stat-tile">
             <div class="stat-icon"><i class="ti ti-file-check"></i></div>
-            <div class="stat-label">Minhas propostas</div>
-            <div class="stat-value"><?= $minhasPropostas ?></div>
+            <div class="stat-body">
+                <div class="stat-label">Minhas propostas</div>
+                <div class="stat-value"><?= $minhasPropostas ?></div>
+            </div>
         </div>
         <div class="stat-tile">
             <div class="stat-icon stat-icon-warning"><i class="ti ti-clock"></i></div>
-            <div class="stat-label">Em análise</div>
-            <div class="stat-value"><?= $pendentes ?></div>
+            <div class="stat-body">
+                <div class="stat-label">Em análise</div>
+                <div class="stat-value"><?= $pendentes ?></div>
+            </div>
         </div>
         <div class="stat-tile">
             <div class="stat-icon stat-icon-success"><i class="ti ti-circle-check"></i></div>
-            <div class="stat-label">Concluídas</div>
-            <div class="stat-value"><?= $concluidas ?></div>
+            <div class="stat-body">
+                <div class="stat-label">Concluídas</div>
+                <div class="stat-value"><?= $concluidas ?></div>
+            </div>
         </div>
         <div class="stat-tile">
             <div class="stat-icon"><i class="ti ti-file-text"></i></div>
-            <div class="stat-label">Licitações abertas</div>
-            <div class="stat-value"><?= $licitacoesAbertas ?></div>
+            <div class="stat-body">
+                <div class="stat-label">Licitações abertas</div>
+                <div class="stat-value"><?= $licitacoesAbertas ?></div>
+            </div>
         </div>
     </div>
 
