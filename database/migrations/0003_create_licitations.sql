@@ -1,0 +1,62 @@
+CREATE TABLE IF NOT EXISTS licitations (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    number VARCHAR(40) NOT NULL,
+    year SMALLINT UNSIGNED NULL,
+    type VARCHAR(60) NULL,
+    title VARCHAR(255) NOT NULL,
+    executing_entity VARCHAR(150) NULL,
+    administrative_process VARCHAR(60) NULL,
+    site_url VARCHAR(255) NULL,
+    delivery_mode VARCHAR(40) NULL,
+    sanitary_license TINYINT(1) NOT NULL DEFAULT 0,
+    situation VARCHAR(40) NOT NULL DEFAULT 'Em licitação',
+    status ENUM('draft', 'open', 'pending', 'closed') NOT NULL DEFAULT 'draft',
+    total_value DECIMAL(14, 2) NOT NULL DEFAULT 0.00,
+    payment_days SMALLINT UNSIGNED NULL,
+    payment_method VARCHAR(60) NULL,
+    delivery_max_days SMALLINT UNSIGNED NULL,
+    publication_date DATE NULL,
+    challenge_deadline DATE NULL,
+    proposal_start_date DATE NULL,
+    delivery_term_days SMALLINT UNSIGNED NULL,
+    proposal_deadline DATE NULL,
+    opening_date DATE NULL,
+    analysis_term_days SMALLINT UNSIGNED NULL,
+    regularization_deadline DATE NULL,
+    appeal_deadline DATE NULL,
+    contracting_term_days SMALLINT UNSIGNED NULL,
+    contracting_deadline DATE NULL,
+    signature_term_days SMALLINT UNSIGNED NULL,
+    validity_date DATE NULL,
+    description TEXT NULL,
+    created_by INT UNSIGNED NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_licitations_number (number),
+    KEY idx_licitations_status (status),
+    CONSTRAINT fk_licitations_created_by FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS licitation_items (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    licitation_id INT UNSIGNED NOT NULL,
+    code VARCHAR(30) NULL,
+    description VARCHAR(255) NOT NULL,
+    unit VARCHAR(10) NULL,
+    quantity DECIMAL(14, 3) NOT NULL DEFAULT 0,
+    unit_price DECIMAL(14, 2) NOT NULL DEFAULT 0,
+    total_price DECIMAL(14, 2) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_licitation_items_licitation (licitation_id),
+    CONSTRAINT fk_licitation_items_licitation FOREIGN KEY (licitation_id) REFERENCES licitations (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS execution_units (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    licitation_id INT UNSIGNED NOT NULL,
+    unit_name VARCHAR(255) NOT NULL,
+    responsible_name VARCHAR(150) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_execution_units_licitation (licitation_id),
+    CONSTRAINT fk_execution_units_licitation FOREIGN KEY (licitation_id) REFERENCES licitations (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

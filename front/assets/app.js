@@ -69,12 +69,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* ============ Wizard de cadastro de edital ============ */
-    var tabs = Array.prototype.slice.call(document.querySelectorAll('.wizard-tab'));
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.wizard-step-pill'));
     var steps = Array.prototype.slice.call(document.querySelectorAll('.step-section'));
     var btnPrev = document.getElementById('btnPrev');
     var btnNext = document.getElementById('btnNext');
     var btnEdit = document.getElementById('btnEdit');
     var formEdital = document.getElementById('formEdital');
+    var stepCurrentLabel = document.getElementById('wizardStepCurrent');
+    var stepNameLabel = document.getElementById('wizardStepName');
+    var progressFill = document.getElementById('wizardProgressFill');
     var current = 1;
     var totalSteps = steps.length;
 
@@ -182,10 +185,18 @@ document.addEventListener('DOMContentLoaded', function () {
         current = Math.max(1, Math.min(totalSteps, step));
         tabs.forEach(function (tab, i) {
             tab.classList.toggle('active', i === current - 1);
+            tab.classList.toggle('done', i < current - 1);
         });
         steps.forEach(function (section, i) {
             section.classList.toggle('active', i === current - 1);
         });
+
+        if (stepCurrentLabel) stepCurrentLabel.textContent = String(current);
+        if (stepNameLabel && tabs[current - 1]) {
+            var activeLabel = tabs[current - 1].querySelector('.wp-label');
+            stepNameLabel.textContent = activeLabel ? activeLabel.textContent.trim() : '';
+        }
+        if (progressFill) progressFill.style.width = (current / totalSteps * 100) + '%';
 
         if (current === totalSteps) refreshReview();
         if (btnPrev) btnPrev.disabled = current === 1;

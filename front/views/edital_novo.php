@@ -8,11 +8,19 @@ layout_header('Novo Edital', 'edital');
 
 $flash = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
+$flashError = $_SESSION['flash_error'] ?? null;
+unset($_SESSION['flash_error']);
 ?>
 <?php if ($flash): ?>
     <div class="alert alert-success alert-flash d-flex align-items-center gap-2" role="alert">
         <i class="ti ti-circle-check me-2"></i>
         <div><?= htmlspecialchars($flash, ENT_QUOTES, 'UTF-8') ?></div>
+    </div>
+<?php endif; ?>
+<?php if ($flashError): ?>
+    <div class="alert alert-danger alert-flash d-flex align-items-center gap-2" role="alert">
+        <i class="ti ti-alert-triangle me-2"></i>
+        <div><?= htmlspecialchars($flashError, ENT_QUOTES, 'UTF-8') ?></div>
     </div>
 <?php endif; ?>
 
@@ -22,38 +30,27 @@ unset($_SESSION['flash']);
         <span class="badge text-bg-info"><?= count([1, 2, 3, 4, 5, 6, 7]) ?> etapas</span>
     </div>
 
-    <ul class="wizard-tabs" id="wizardTabs">
-        <li class="wizard-tab active" data-step="1">
-            <span class="wt-icon"><i class="ti ti-file-text"></i></span>
-            <span><span class="wt-title">Identificação do Edital</span><span class="wt-sub">Informações gerais</span></span>
-        </li>
-        <li class="wizard-tab" data-step="2">
-            <span class="wt-icon"><i class="ti ti-list-check"></i></span>
-            <span><span class="wt-title">Itens</span><span class="wt-sub">Itens e quantidades</span></span>
-        </li>
-        <li class="wizard-tab" data-step="3">
-            <span class="wt-icon"><i class="ti ti-map-pin"></i></span>
-            <span><span class="wt-title">Unidades Executoras</span><span class="wt-sub">Locais de entrega</span></span>
-        </li>
-        <li class="wizard-tab" data-step="4">
-            <span class="wt-icon"><i class="ti ti-currency-real"></i></span>
-            <span><span class="wt-title">Faturamento</span><span class="wt-sub">Formas de pagamento</span></span>
-        </li>
-        <li class="wizard-tab" data-step="5">
-            <span class="wt-icon"><i class="ti ti-calendar"></i></span>
-            <span><span class="wt-title">Prazos e Etapas</span><span class="wt-sub">Cronograma</span></span>
-        </li>
-        <li class="wizard-tab" data-step="6">
-            <span class="wt-icon"><i class="ti ti-folder"></i></span>
-            <span><span class="wt-title">Documentos</span><span class="wt-sub">Obrigações e anexos</span></span>
-        </li>
-        <li class="wizard-tab" data-step="7">
-            <span class="wt-icon"><i class="ti ti-checks"></i></span>
-            <span><span class="wt-title">Revisar e Gravar</span><span class="wt-sub">Confirmação final</span></span>
-        </li>
-    </ul>
+    <div class="wizard-progress">
+        <div class="wizard-progress-label">
+            <span>Etapa <strong id="wizardStepCurrent">1</strong> de <strong>7</strong></span>
+            <span id="wizardStepName">Identificação do Edital</span>
+        </div>
+        <div class="wizard-progress-bar">
+            <div class="wizard-progress-fill" id="wizardProgressFill" style="width: 14.28%"></div>
+        </div>
+        <div class="wizard-steps-nav" id="wizardTabs">
+            <button type="button" class="wizard-step-pill active" data-step="1"><span class="wp-num">1</span><span class="wp-label">Identificação</span></button>
+            <button type="button" class="wizard-step-pill" data-step="2"><span class="wp-num">2</span><span class="wp-label">Itens</span></button>
+            <button type="button" class="wizard-step-pill" data-step="3"><span class="wp-num">3</span><span class="wp-label">Locais</span></button>
+            <button type="button" class="wizard-step-pill" data-step="4"><span class="wp-num">4</span><span class="wp-label">Faturamento</span></button>
+            <button type="button" class="wizard-step-pill" data-step="5"><span class="wp-num">5</span><span class="wp-label">Prazos</span></button>
+            <button type="button" class="wizard-step-pill" data-step="6"><span class="wp-num">6</span><span class="wp-label">Documentos</span></button>
+            <button type="button" class="wizard-step-pill" data-step="7"><span class="wp-num">7</span><span class="wp-label">Revisão</span></button>
+        </div>
+    </div>
 
     <form id="formEdital" method="post" action="/edital" enctype="multipart/form-data">
+        <?= \App\Core\Csrf::field() ?>
         <div class="wizard-body">
 
             <!-- ============ Passo 1 — Identificação do Edital ============ -->

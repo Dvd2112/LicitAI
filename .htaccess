@@ -1,0 +1,16 @@
+# Este projeto e servido por public/index.php (front controller). O codigo em
+# src/, storage/, database/ e scripts/ nunca deve ficar acessivel via HTTP.
+
+Options -Indexes -MultiViews
+
+<FilesMatch "\.(env|sql|log)$">
+    Require all denied
+</FilesMatch>
+
+RewriteEngine On
+
+# Acesso direto pela raiz (ex.: http://127.0.0.1/simplificagov.com/) e
+# redirecionado para o vhost correto, que aponta para public/.
+RewriteCond %{HTTP_HOST} !^simplificagov\.local
+RewriteCond %{SERVER_PORT} !^8080$
+RewriteRule ^(.*)$ http://127.0.0.1:8080/$1 [R=302,L]
