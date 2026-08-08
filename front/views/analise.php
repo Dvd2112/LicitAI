@@ -37,7 +37,7 @@ foreach ($matrix['scores'] as $s) {
 
 <div class="stat-grid mb-4">
     <div class="stat-tile">
-        <div class="stat-label">Empresas participantes</div>
+        <div class="stat-label">Propostas recebidas</div>
         <div class="stat-value"><?= count($matrix['proposals']) ?></div>
     </div>
     <div class="stat-tile">
@@ -62,7 +62,7 @@ foreach ($matrix['scores'] as $s) {
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead><tr><th>Empresa</th><th>Aderência</th><th>Requisitos atendidos</th></tr></thead>
+                    <thead><tr><th>Proposta</th><th>Aderência</th><th>Requisitos atendidos</th></tr></thead>
                     <tbody>
                     <?php foreach ($matrix['proposals'] as $p): ?>
                         <?php $score = $matrix['scores'][(int) $p['id']] ?? null; ?>

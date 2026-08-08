@@ -201,7 +201,7 @@ if (!$isAdmin && $companyId) {
         <span class="form-label mb-0"><i class="ti ti-file-check me-1 text-primary"></i>Propostas recebidas (<?= count($propostas) ?>)</span>
         <?php if ($isAdmin && count($propostas) >= 2): ?>
             <a href="/analise?licitation_id=<?= (int) $licitacao['id'] ?>" class="btn btn-outline-info btn-sm">
-                <i class="ti ti-chart-bar me-1"></i>Comparar empresas
+                <i class="ti ti-chart-bar me-1"></i>Comparar propostas
             </a>
         <?php endif; ?>
     </div>
@@ -211,13 +211,20 @@ if (!$isAdmin && $companyId) {
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead><tr><th>Empresa</th><th>CNPJ</th><th>Status</th><th>Envio</th><th class="action-cell">Ações</th></tr></thead>
+                    <thead><tr><th>Proposta</th><th>Aderência</th><th>Documentos</th><th>Status</th><th>Envio</th><th class="action-cell">Ações</th></tr></thead>
                     <tbody>
                     <?php foreach ($propostas as $proposta): ?>
                         <?php $pStatus = ProposalService::statusMeta($proposta['status']); ?>
                         <tr>
                             <td class="fw-semibold"><?= htmlspecialchars($proposta['corporate_name'], ENT_QUOTES, 'UTF-8') ?></td>
-                            <td><?= htmlspecialchars($proposta['cnpj'], ENT_QUOTES, 'UTF-8') ?></td>
+                            <td>
+                                <?php if ($proposta['adherence_percentage'] !== null): ?>
+                                    <span class="fw-semibold"><?= (float) $proposta['adherence_percentage'] ?>%</span>
+                                <?php else: ?>
+                                    <span class="text-muted small">—</span>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-muted small"><?= (int) $proposta['document_count'] ?></td>
                             <td><span class="badge <?= $pStatus['class'] ?>"><?= $pStatus['label'] ?></span></td>
                             <td class="text-muted small"><?= $proposta['submitted_at'] ? date('d/m/Y', strtotime($proposta['submitted_at'])) : '—' ?></td>
                             <td class="action-cell">

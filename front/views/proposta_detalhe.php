@@ -17,8 +17,8 @@ $canAnalyze = in_array($proposta['status'], ['analyzing', 'analyzed', 'needs_rev
 
 <div class="flex-between mt-1 mb-3">
     <h1 class="h4 mb-0">
-        <?= htmlspecialchars($proposta['corporate_name'], ENT_QUOTES, 'UTF-8') ?>
-        <span class="text-muted fw-normal">— <?= htmlspecialchars($proposta['licitation_number'], ENT_QUOTES, 'UTF-8') ?></span>
+        Proposta — <?= htmlspecialchars($proposta['licitation_number'], ENT_QUOTES, 'UTF-8') ?>
+        <span class="text-muted fw-normal"><?= htmlspecialchars($proposta['licitation_title'], ENT_QUOTES, 'UTF-8') ?></span>
     </h1>
     <div class="flex">
         <span class="badge <?= $status['class'] ?>"><?= $status['label'] ?></span>
@@ -47,10 +47,14 @@ $canAnalyze = in_array($proposta['status'], ['analyzing', 'analyzed', 'needs_rev
 
 <div class="grid-2 mb-4">
     <div class="card">
-        <div class="card-header"><span class="form-label mb-0">Empresa</span></div>
+        <div class="card-header"><span class="form-label mb-0">Proposta</span></div>
         <table class="data-table">
-            <tr><th>Razão social</th><td><?= htmlspecialchars($proposta['corporate_name'], ENT_QUOTES, 'UTF-8') ?></td></tr>
-            <tr><th>CNPJ</th><td><?= htmlspecialchars($proposta['cnpj'], ENT_QUOTES, 'UTF-8') ?></td></tr>
+            <tr><th>ID</th><td>#<?= (int) $proposta['id'] ?></td></tr>
+            <tr><th>Documentos</th><td><?= count($documentos) ?> arquivo(s)</td></tr>
+            <tr><th>Aderência</th>
+                <td><?= $evaluationSummary['adherence_percentage'] !== null ? round((float) $evaluationSummary['adherence_percentage']) . '%' : '—' ?></td></tr>
+            <tr><th>Requisitos atendidos</th>
+                <td><?= $evaluationSummary ? "{$evaluationSummary['attended']}/{$evaluationSummary['total_requirements']}" : '—' ?></td></tr>
         </table>
     </div>
     <div class="card">

@@ -60,11 +60,13 @@ final class ProposalService
     public static function listForLicitation(PDO $pdo, int $licitationId): array
     {
         $stmt = $pdo->prepare(
-            'SELECT p.*, c.corporate_name, c.cnpj
+            "SELECT p.*, c.corporate_name, c.cnpj, s.adherence_percentage,
+                (SELECT COUNT(*) FROM proposal_documents d WHERE d.proposal_id = p.id) AS document_count
              FROM proposals p
              JOIN companies c ON c.id = p.company_id
+             LEFT JOIN proposal_scores s ON s.proposal_id = p.id
              WHERE p.licitation_id = :licitation_id
-             ORDER BY p.created_at DESC'
+             ORDER BY p.created_at DESC"
         );
         $stmt->execute(['licitation_id' => $licitationId]);
 

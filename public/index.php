@@ -12,7 +12,6 @@ use App\Core\Env;
 use App\Services\AuditLogger;
 use App\Services\AuthService;
 use App\Services\CompanyService;
-use App\Services\ContractService;
 use App\Services\EvaluationService;
 use App\Services\ExtractionService;
 use App\Services\LicitationImportService;
@@ -81,8 +80,8 @@ $isAdmin = AuthService::isAdmin();
 $companyId = $currentUser['company_id'] ?? null;
 
 $adminOnlyPrefixes = [
-    '/empresas', '/edital/novo', '/edital/upload', '/edital/remover', '/edital/requisito', '/licitantes/remover',
-    '/contratos', '/processar', '/analisar', '/analise', '/avaliacao/revisar', '/auditoria',
+    '/edital/novo', '/edital/upload', '/edital/remover', '/edital/requisito', '/licitantes/remover',
+    '/processar', '/analisar', '/analise', '/avaliacao/revisar', '/auditoria',
 ];
 foreach ($adminOnlyPrefixes as $prefix) {
     if ($logged && str_starts_with($path, $prefix) && !$isAdmin) {
@@ -339,40 +338,6 @@ switch ($path) {
         header('Location: /licitantes');
         exit;
 
-    case '/contratos':
-        if ($method === 'POST') {
-            try {
-                $id = ContractService::create($pdo, [
-                    'company_id' => (int) ($_POST['company_id'] ?? 0) ?: null,
-                    'name' => trim((string) ($_POST['nome'] ?? '')),
-                    'number' => trim((string) ($_POST['numero'] ?? '')),
-                    'status' => trim((string) ($_POST['status'] ?? 'ativo')),
-                    'value' => (float) ($_POST['valor'] ?? 0),
-                    'percentage' => max(0, min(100, (int) ($_POST['percentual'] ?? 0))),
-                    'end_date' => trim((string) ($_POST['vigencia'] ?? '')),
-                ]);
-                AuditLogger::log($pdo, $currentUser['id'], 'create', 'contract', $id);
-                $_SESSION['flash'] = 'Contrato cadastrado com sucesso.';
-            } catch (Throwable $e) {
-                $_SESSION['flash_error'] = $e->getMessage();
-            }
-            header('Location: /contratos');
-            exit;
-        }
-
-        $contratos = ContractService::list($pdo);
-        $empresasDisponiveis = CompanyService::list($pdo);
-        require __DIR__ . '/../front/views/contratos.php';
-        break;
-
-    case '/contratos/remover':
-        $id = (int) ($_POST['id'] ?? 0);
-        ContractService::delete($pdo, $id);
-        AuditLogger::log($pdo, $currentUser['id'], 'delete', 'contract', $id);
-        $_SESSION['flash'] = 'Contrato excluído.';
-        header('Location: /contratos');
-        exit;
-
     case '/analise':
         $licitationId = (int) ($_GET['licitation_id'] ?? 0);
         $licitacao = LicitationService::find($pdo, $licitationId);
@@ -419,46 +384,6 @@ switch ($path) {
             $_SESSION['flash_error'] = $e->getMessage();
         }
         header('Location: /avaliacao?id=' . $evaluationId);
-        exit;
-
-    case '/empresas':
-        if ($method === 'POST') {
-            try {
-                $newCompanyId = CompanyService::create($pdo, [
-                    'corporate_name' => trim((string) ($_POST['corporate_name'] ?? '')),
-                    'trade_name' => trim((string) ($_POST['trade_name'] ?? '')),
-                    'cnpj' => trim((string) ($_POST['cnpj'] ?? '')),
-                    'email' => trim((string) ($_POST['email'] ?? '')),
-                    'phone' => trim((string) ($_POST['phone'] ?? '')),
-                    'responsible_name' => trim((string) ($_POST['responsible_name'] ?? '')),
-                    'login_email' => trim((string) ($_POST['login_email'] ?? '')),
-                    'login_password' => (string) ($_POST['login_password'] ?? ''),
-                ]);
-                AuditLogger::log($pdo, $currentUser['id'], 'create', 'company', $newCompanyId);
-                $_SESSION['flash'] = 'Empresa cadastrada com sucesso.';
-            } catch (Throwable $e) {
-                $_SESSION['flash_error'] = $e->getMessage();
-            }
-
-            header('Location: /empresas');
-            exit;
-        }
-
-        $empresas = CompanyService::list($pdo);
-        require __DIR__ . '/../front/views/empresas.php';
-        break;
-
-    case '/empresas/remover':
-        $id = (int) ($_POST['id'] ?? 0);
-        try {
-            CompanyService::delete($pdo, $id);
-            AuditLogger::log($pdo, $currentUser['id'], 'delete', 'company', $id);
-            $_SESSION['flash'] = 'Empresa excluída.';
-        } catch (Throwable $e) {
-            $_SESSION['flash_error'] = $e->getMessage();
-        }
-
-        header('Location: /empresas');
         exit;
 
     case '/auditoria':

@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Services\AuditLogger;
-use App\Services\ContractService;
 use App\Services\LicitationService;
 use App\Services\ProposalService;
 
@@ -40,8 +39,6 @@ if ($isAdmin) {
     $stmt->execute($namedPendingParams);
     $pendentes = (int) $stmt->fetchColumn();
 
-    $contratosAtivos = (int) $pdo->query("SELECT COUNT(*) FROM contracts WHERE status = 'ativo'")->fetchColumn();
-
     $perPage = 5;
     $licPage = max(1, (int) ($_GET['lic_page'] ?? 1));
     $totalLicitacoes = (int) $pdo->query('SELECT COUNT(*) FROM licitations')->fetchColumn();
@@ -53,11 +50,24 @@ if ($isAdmin) {
     $stmt->execute();
     $licitacoesRecentes = $stmt->fetchAll();
 
-    $contratosAtencao = $pdo->query(
-        "SELECT ct.*, c.corporate_name FROM contracts ct
-         LEFT JOIN companies c ON c.id = ct.company_id
-         WHERE ct.status IN ('vencido', 'suspenso') ORDER BY ct.created_at DESC LIMIT 5"
+    $licitacoesAtencao = $pdo->query(
+        "SELECT l.*,
+                (SELECT COUNT(*) FROM proposals p WHERE p.licitation_id = l.id AND p.status = 'needs_review') AS needs_review,
+                (SELECT COUNT(*) FROM proposals p WHERE p.licitation_id = l.id) AS proposal_count
+         FROM licitations l
+         WHERE l.status = 'open'
+         ORDER BY needs_review DESC, l.created_at DESC
+         LIMIT 5"
     )->fetchAll();
+
+    $stmt = $pdo->prepare(
+        "SELECT * FROM licitations
+         WHERE opening_date IS NOT NULL AND opening_date >= CURDATE()
+         ORDER BY opening_date ASC
+         LIMIT 5"
+    );
+    $stmt->execute();
+    $proximasAberturas = $stmt->fetchAll();
 
     $atividadesRecentes = AuditLogger::recentActivity($pdo, 10, $since);
 } else {
@@ -81,7 +91,7 @@ if ($isAdmin) {
 <div class="flex-between mb-4">
     <div>
         <h1 class="h4 mb-1">Visão geral das contratações</h1>
-        <p class="text-muted mb-0">Acompanhe o andamento das licitações, propostas e contratos.</p>
+        <p class="text-muted mb-0">Acompanhe o andamento das licitações e propostas.</p>
     </div>
     <?php if ($isAdmin): ?>
         <div class="dropdown">
@@ -125,14 +135,6 @@ if ($isAdmin) {
                 <div class="stat-label">Análises pendentes</div>
                 <div class="stat-value"><?= $pendentes ?></div>
                 <a href="/licitantes" class="stat-link">Ver todas <i class="ti ti-chevron-right"></i></a>
-            </div>
-        </div>
-        <div class="stat-tile">
-            <div class="stat-icon stat-icon-purple"><i class="ti ti-briefcase"></i></div>
-            <div class="stat-body">
-                <div class="stat-label">Contratos ativos</div>
-                <div class="stat-value"><?= $contratosAtivos ?></div>
-                <a href="/contratos" class="stat-link">Ver todos <i class="ti ti-chevron-right"></i></a>
             </div>
         </div>
     </div>
@@ -186,23 +188,28 @@ if ($isAdmin) {
 
         <div class="card">
             <div class="card-header flex-between">
-                <h2 class="h6 mb-0">Contratos que exigem atenção</h2>
-                <a href="/contratos" class="text-primary small">Ver todos <i class="ti ti-chevron-right"></i></a>
+                <h2 class="h6 mb-0">Licitações que exigem atenção</h2>
+                <a href="/edital" class="text-primary small">Ver todas <i class="ti ti-chevron-right"></i></a>
             </div>
             <div class="card-body p-0">
-                <?php if (!$contratosAtencao): ?>
-                    <div class="empty-state"><i class="ti ti-circle-check"></i>Nenhum contrato pendente de atenção no período selecionado.</div>
+                <?php if (!$licitacoesAtencao): ?>
+                    <div class="empty-state"><i class="ti ti-circle-check"></i>Nenhuma licitação aberta requer atenção no momento.</div>
                 <?php else: ?>
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
-                            <thead><tr><th>Contrato</th><th>Fornecedor</th><th>Status</th></tr></thead>
+                            <thead><tr><th>Licitação</th><th>Revisão</th><th>Propostas</th></tr></thead>
                             <tbody>
-                            <?php foreach ($contratosAtencao as $contrato): ?>
-                                <?php $status = ContractService::statusMeta($contrato['status']); ?>
+                            <?php foreach ($licitacoesAtencao as $lic): ?>
                                 <tr>
-                                    <td class="fw-semibold"><?= htmlspecialchars($contrato['name'], ENT_QUOTES, 'UTF-8') ?></td>
-                                    <td><?= htmlspecialchars($contrato['corporate_name'] ?? '—', ENT_QUOTES, 'UTF-8') ?></td>
-                                    <td><span class="badge <?= $status['class'] ?>"><?= $status['label'] ?></span></td>
+                                    <td class="fw-semibold"><a href="/edital?id=<?= (int) $lic['id'] ?>"><?= htmlspecialchars($lic['number'], ENT_QUOTES, 'UTF-8') ?></a></td>
+                                    <td>
+                                        <?php if ((int) $lic['needs_review'] > 0): ?>
+                                            <span class="badge text-bg-warning"><?= (int) $lic['needs_review'] ?> pendente(s)</span>
+                                        <?php else: ?>
+                                            <span class="text-muted small">—</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-muted small"><?= (int) $lic['proposal_count'] ?> proposta(s)</td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
@@ -213,34 +220,63 @@ if ($isAdmin) {
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header flex-between">
-            <h2 class="h6 mb-0">Atividades recentes</h2>
-            <a href="/auditoria" class="text-primary small">Ver todas as atividades <i class="ti ti-chevron-right"></i></a>
+    <div class="grid-2 mb-4">
+        <div class="card">
+            <div class="card-header flex-between">
+                <h2 class="h6 mb-0">Atividades recentes</h2>
+                <a href="/auditoria" class="text-primary small">Ver todas as atividades <i class="ti ti-chevron-right"></i></a>
+            </div>
+            <div class="card-body p-0">
+                <?php if (!$atividadesRecentes): ?>
+                    <div class="empty-state"><i class="ti ti-history"></i>Nenhuma atividade no período selecionado.</div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead><tr><th>Data/hora</th><th>Usuário</th><th>Atividade</th><th>Detalhes</th></tr></thead>
+                            <tbody>
+                            <?php foreach ($atividadesRecentes as $atividade): ?>
+                                <tr>
+                                    <td class="text-muted small"><?= date('d/m/Y H:i', strtotime($atividade['created_at'])) ?></td>
+                                    <td><?= htmlspecialchars($atividade['user_name'] ?? 'Sistema', ENT_QUOTES, 'UTF-8') ?></td>
+                                    <td><?= htmlspecialchars($atividade['label'], ENT_QUOTES, 'UTF-8') ?></td>
+                                    <td class="text-muted small"><?= htmlspecialchars($atividade['detail_text'], ENT_QUOTES, 'UTF-8') ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 border-top">
+                        <span class="text-muted small"><?= count($atividadesRecentes) ?> registros</span>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
-        <div class="card-body p-0">
-            <?php if (!$atividadesRecentes): ?>
-                <div class="empty-state"><i class="ti ti-history"></i>Nenhuma atividade no período selecionado.</div>
-            <?php else: ?>
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead><tr><th>Data/hora</th><th>Usuário</th><th>Atividade</th><th>Detalhes</th></tr></thead>
-                        <tbody>
-                        <?php foreach ($atividadesRecentes as $atividade): ?>
-                            <tr>
-                                <td class="text-muted small"><?= date('d/m/Y H:i', strtotime($atividade['created_at'])) ?></td>
-                                <td><?= htmlspecialchars($atividade['user_name'] ?? 'Sistema', ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($atividade['label'], ENT_QUOTES, 'UTF-8') ?></td>
-                                <td class="text-muted small"><?= htmlspecialchars($atividade['detail_text'], ENT_QUOTES, 'UTF-8') ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="p-3 border-top">
-                    <span class="text-muted small"><?= count($atividadesRecentes) ?> registros</span>
-                </div>
-            <?php endif; ?>
+
+        <div class="card">
+            <div class="card-header flex-between">
+                <h2 class="h6 mb-0">Próximas aberturas de licitação</h2>
+                <a href="/edital" class="text-primary small">Ver todas <i class="ti ti-chevron-right"></i></a>
+            </div>
+            <div class="card-body p-0">
+                <?php if (!$proximasAberturas): ?>
+                    <div class="empty-state"><i class="ti ti-calendar-check"></i>Nenhuma licitação com abertura futura cadastrada.</div>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead><tr><th>Licitação</th><th>Objeto</th><th>Abertura</th></tr></thead>
+                            <tbody>
+                            <?php foreach ($proximasAberturas as $lic): ?>
+                                <tr>
+                                    <td class="fw-semibold"><a href="/edital?id=<?= (int) $lic['id'] ?>"><?= htmlspecialchars($lic['number'], ENT_QUOTES, 'UTF-8') ?></a></td>
+                                    <td><?= htmlspecialchars($lic['title'], ENT_QUOTES, 'UTF-8') ?></td>
+                                    <td class="text-muted small"><?= date('d/m/Y', strtotime($lic['opening_date'])) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 <?php else: ?>

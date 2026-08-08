@@ -68,7 +68,6 @@ $preselect = (int) ($_GET['enviar'] ?? 0);
                     <thead>
                     <tr>
                         <th>Licitação</th>
-                        <?php if ($isAdmin): ?><th>Empresa</th><th>CNPJ</th><?php endif; ?>
                         <th>Documentos</th>
                         <th>Processamento</th>
                         <th>Aderência</th>
@@ -81,10 +80,6 @@ $preselect = (int) ($_GET['enviar'] ?? 0);
                         <?php $status = ProposalService::statusMeta($proposta['status']); ?>
                         <tr>
                             <td class="fw-semibold"><?= htmlspecialchars($proposta['licitation_number'], ENT_QUOTES, 'UTF-8') ?></td>
-                            <?php if ($isAdmin): ?>
-                                <td><?= htmlspecialchars($proposta['corporate_name'], ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($proposta['cnpj'], ENT_QUOTES, 'UTF-8') ?></td>
-                            <?php endif; ?>
                             <td class="text-muted small"><?= (int) $proposta['document_count'] ?> arquivo(s)</td>
                             <td><span class="badge <?= $status['class'] ?>"><?= $status['label'] ?></span></td>
                             <td class="text-muted small">
