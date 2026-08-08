@@ -20,8 +20,8 @@ function layout_header(string $title, string $active = ''): void
         'dashboard' => ['/dashboard', 'Dashboard', 'ti-layout-dashboard', true],
         'edital' => ['/edital', 'Licitações', 'ti-file-text', true],
         'licitantes' => ['/licitantes', 'Propostas', 'ti-file-check', true],
-        'empresas' => ['/empresas', 'Empresas', 'ti-building', false],
-        'contratos' => ['/contratos', 'Contratos', 'ti-briefcase', false],
+        // 'empresas' => ['/empresas', 'Empresas', 'ti-building', false],
+        // 'contratos' => ['/contratos', 'Contratos', 'ti-briefcase', false],
         'auditoria' => ['/auditoria', 'Auditoria', 'ti-list-search', false],
     ];
     ?>
