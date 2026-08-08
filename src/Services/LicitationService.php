@@ -278,6 +278,29 @@ final class LicitationService
         return (int) $pdo->lastInsertId();
     }
 
+    /** Persists a requirement identified by the AI during automatic document import (origin = extracted). */
+    public static function addExtractedRequirement(PDO $pdo, int $licitationId, array $data, int $documentId, int $userId): int
+    {
+        $stmt = $pdo->prepare(
+            'INSERT INTO licitation_requirements
+                (licitation_id, category, description, mandatory, weight, origin, source_document_id, source_page, source_excerpt, created_by)
+             VALUES
+                (:licitation_id, :category, :description, :mandatory, 1.00, "extracted", :source_document_id, :source_page, :source_excerpt, :created_by)'
+        );
+        $stmt->execute([
+            'licitation_id' => $licitationId,
+            'category' => $data['category'] ?? 'outro',
+            'description' => $data['description'],
+            'mandatory' => !empty($data['mandatory']) ? 1 : 0,
+            'source_document_id' => $documentId,
+            'source_page' => $data['source_page'] ?? null,
+            'source_excerpt' => $data['source_excerpt'] ?? null,
+            'created_by' => $userId,
+        ]);
+
+        return (int) $pdo->lastInsertId();
+    }
+
     public static function deleteRequirement(PDO $pdo, int $id): void
     {
         $stmt = $pdo->prepare('DELETE FROM licitation_requirements WHERE id = :id');

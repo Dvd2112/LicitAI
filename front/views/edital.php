@@ -33,9 +33,14 @@ unset($_SESSION['flash_error']);
         <p class="text-muted mb-0">Gerencie as licitações cadastradas e acompanhe o andamento de cada uma.</p>
     </div>
     <?php if ($isAdmin): ?>
-        <a href="/edital/novo" class="btn btn-success">
-            <i class="ti ti-plus me-1"></i>Nova licitação
-        </a>
+        <div class="d-flex gap-2">
+            <a href="/edital/upload" class="btn btn-outline-success">
+                <i class="ti ti-sparkles me-1"></i>Upload de licitação
+            </a>
+            <a href="/edital/novo" class="btn btn-success">
+                <i class="ti ti-plus me-1"></i>Nova licitação
+            </a>
+        </div>
     <?php endif; ?>
 </div>
 

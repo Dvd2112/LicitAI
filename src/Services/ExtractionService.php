@@ -149,7 +149,7 @@ final class ExtractionService
      *
      * @return array{0: array<int, string>, 1: string} [pages, method]
      */
-    private static function extractPdfPages(string $path): array
+    public static function extractPdfPages(string $path): array
     {
         $pdftotext = Env::get('PDFTOTEXT_BIN', 'pdftotext');
         $output = self::run([$pdftotext, '-layout', $path, '-']);

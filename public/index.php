@@ -15,6 +15,7 @@ use App\Services\CompanyService;
 use App\Services\ContractService;
 use App\Services\EvaluationService;
 use App\Services\ExtractionService;
+use App\Services\LicitationImportService;
 use App\Services\LicitationService;
 use App\Services\ProposalService;
 use App\Services\ComparisonService;
@@ -80,7 +81,7 @@ $isAdmin = AuthService::isAdmin();
 $companyId = $currentUser['company_id'] ?? null;
 
 $adminOnlyPrefixes = [
-    '/empresas', '/edital/novo', '/edital/remover', '/edital/requisito', '/licitantes/remover',
+    '/empresas', '/edital/novo', '/edital/upload', '/edital/remover', '/edital/requisito', '/licitantes/remover',
     '/contratos', '/processar', '/analisar', '/analise', '/avaliacao/revisar', '/auditoria',
 ];
 foreach ($adminOnlyPrefixes as $prefix) {
@@ -142,6 +143,23 @@ switch ($path) {
 
     case '/edital/novo':
         require __DIR__ . '/../front/views/edital_novo.php';
+        break;
+
+    case '/edital/upload':
+        if ($method === 'POST') {
+            try {
+                $result = LicitationImportService::importFromUpload($pdo, $_FILES['documento'] ?? [], (int) $currentUser['id']);
+                $_SESSION['flash'] = "Licitação importada pela IA: {$result['items']} item(ns) e {$result['requirements']} requisito(s) identificados. "
+                    . 'Revise os dados extraídos antes de considerar o edital válido.';
+                header('Location: /edital?id=' . $result['licitation_id']);
+            } catch (Throwable $e) {
+                $_SESSION['flash_error'] = $e->getMessage();
+                header('Location: /edital/upload');
+            }
+            exit;
+        }
+
+        require __DIR__ . '/../front/views/edital_upload.php';
         break;
 
     case '/edital':
